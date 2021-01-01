@@ -26,7 +26,7 @@ def call(body) {
                                             --insecure \
                                             --skip-tls-verify \
                                             --cache=false \
-                                            --destination=registry.easlab.co.uk/eas/orchestrator-runner
+                                            --destination=registry.easlab.co.uk/''' + config.project + '''/''' + config.name + ''':latest
                                 '''
                         }
                     }
@@ -34,7 +34,7 @@ def call(body) {
             }
             stage('Deploy') {
                 environment {
-                    APPNAME = "orchestrator-runner"
+                    APPNAME = config.name
                 }
                 steps {
                     container(name: 'kube') {
