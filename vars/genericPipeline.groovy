@@ -34,6 +34,7 @@ def call(body) {
             }
             stage('Deploy') {
                 environment {
+                    PROJECT = "${config.project}"
                     APPNAME = "${config.name}"
                 }
                 steps {
