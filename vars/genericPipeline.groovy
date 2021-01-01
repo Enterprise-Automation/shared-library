@@ -1,4 +1,3 @@
-
 def call(body) {
     def config = [:]
     body.resolveStrategy = Closure.DELEGATE_FIRST
@@ -17,23 +16,30 @@ def call(body) {
                     PATH = "/busybox:/kaniko:$PATH"
                 }
                 steps {
-                    container(name: 'kaniko', shell: '/busybox/sh') {
+                    container(name: "kaniko", shell: "/busybox/sh") {
                         script{
-                                sh "#!/busybox/sh /kaniko/executor -f `pwd`/Dockerfile -c `pwd` --insecure --skip-tls-verify --cache=false --destination=registry.easlab.co.uk/${config.project}/${config.name}"
+                                sh '''
+                                    #!/busybox/sh \
+                                        /kaniko/executor \
+                                            -f `pwd`/Dockerfile \
+                                            -c `pwd` \
+                                            --insecure \
+                                            --skip-tls-verify \
+                                            --cache=false \
+                                            --destination=registry.easlab.co.uk/eas/orchestrator-runner
+                                '''
                         }
                     }
                 }
             }
             stage('Deploy') {
                 environment {
-                    PROJECT = "${config.name}"
-                    NAME = "${config.name}"
+                    APPNAME = "orchestrator-runner"
                 }
                 steps {
                     container(name: 'kube') {
-                        // Deploy to k8s cluster
                         script {
-                            kubernetesDeploy configs: "manifests/*.yaml", kubeconfigId: 'kubeconfig'
+                            kubernetesDeploy configs: "manifests/*.yaml", kubeconfigId: "kubeconfig"
                         }
                     }
                 }
