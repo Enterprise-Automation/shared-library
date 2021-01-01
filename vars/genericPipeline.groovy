@@ -34,7 +34,7 @@ def call(body) {
             }
             stage('Deploy') {
                 environment {
-                    APPNAME = config.name
+                    APPNAME = "${config.name}"
                 }
                 steps {
                     container(name: 'kube') {
