@@ -4,9 +4,6 @@ def call(body) {
     body.resolveStrategy = Closure.DELEGATE_FIRST
     body.delegate = config
     body()
-    
-    deleteDir()
-
     pipeline {
         agent {
             kubernetes {
@@ -15,9 +12,6 @@ def call(body) {
             }
         }
         stages {
-            stage('Clone') {
-	        	checkout scm
-            }
             stage("Build/Push") {
                 environment {
                     PATH = "/busybox:/kaniko:$PATH"
