@@ -18,7 +18,11 @@ def call(body) {
                 steps {
                     container(name: "kaniko", shell: "/busybox/sh") {
                         script{
-                                sh '''#!/busybox/sh \
+                                sh "echo pwd"
+                                sh "pwd"
+                                sh "echo ls"
+                                sh "ls"
+                                sh '''#!/busybox/sh 
                                         /kaniko/executor -f `pwd`/Dockerfile -c `pwd` --insecure --skip-tls-verify --cache=false --destination=registry.easlab.co.uk/''' + config.project + '''/''' + config.name + ''':latest'''
                         }
                     }
