@@ -14,7 +14,7 @@ def call(body) {
             stage("configuration") {
                 steps {
                     script { 
-                        options = readYaml (file: config.file) 
+                        options = readYaml (file: config.configFile) 
                     }
                     echo options.deployments.toString()
                 }
