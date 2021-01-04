@@ -3,6 +3,9 @@ def call(body) {
     body.resolveStrategy = Closure.DELEGATE_FIRST
     body.delegate = config
     body()
+
+    options = readYaml (file: config.configFile) 
+
     pipeline {
         agent {
             kubernetes {
@@ -11,28 +14,13 @@ def call(body) {
             }
         }
         stages {
-            stage("configuration") {
-                steps {
-                    script { 
-                        options = readYaml (file: config.configFile) 
-                    }
-                    echo options.deployments.toString()
-                }
-            }
             stage("Build/Push Docker Image") {
                 environment {
                     PATH = "/busybox:/kaniko:$PATH"
                 }
                 steps {
                     container(name: 'kaniko', shell: '/busybox/sh') {
-                        script{
-                                sh '''#!/busybox/sh
-                                /kaniko/executor -f `pwd`/react_app/Dockerfile -c `pwd`/react_app --insecure --skip-tls-verify --cache=false --destination=registry.easlab.co.uk/ethan/weather:react'''
-                        }
-                        script{
-                                sh '''#!/busybox/sh
-                                /kaniko/executor -f `pwd`/node_app/Dockerfile -c `pwd`/node_app --insecure --skip-tls-verify --cache=false --destination=registry.easlab.co.uk/ethan/weather:node'''
-                        }
+                        buildImages(options.deployments)
                     }
                 }
             }
@@ -58,5 +46,15 @@ def call(body) {
         failure { 
             slackSend color: "danger", message: "$JOB_NAME has failed. Check $JOB_URL"
         }
+    }
+}
+
+def buildImages(deployments) {
+    deployments.each { deployment -> 
+        script{
+            sh """#!/busybox/sh \
+                /kaniko/executor -f `pwd`/${deployment.build.dockerfile} -c `pwd`/${deployment.build.context} --insecure --skip-tls-verify --cache=false --destination=${deployment.build.destination}"""
+        }
+
     }
 }
