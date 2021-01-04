@@ -51,10 +51,12 @@ def call(body) {
 
 def buildImages(deployments) {
     deployments.each { deployment -> 
-        script{
-            sh """#!/busybox/sh \
-                /kaniko/executor -f `pwd`/${deployment.build.dockerfile} -c `pwd`/${deployment.build.context} --insecure --skip-tls-verify --cache=false --destination=${deployment.build.destination}"""
-        }
+        stage{
 
+            script{
+                sh """#!/busybox/sh \
+                    /kaniko/executor -f `pwd`/${deployment.build.dockerfile} -c `pwd`/${deployment.build.context} --insecure --skip-tls-verify --cache=false --destination=${deployment.build.destination}"""
+            }
+        }
     }
 }
