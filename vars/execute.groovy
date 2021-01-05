@@ -4,6 +4,7 @@ def call(body) {
     body.delegate = config
     body()
     def options = [:]
+    
     pipeline {
         agent {
             kubernetes {
@@ -14,9 +15,9 @@ def call(body) {
         stages {
             stage('Config'){
                 steps{
-                        def slackResponse = slackSend(channel: "jenkins", message: "Build started for $JOB_NAME\n$JOB_URL")
-                        slackResponse.addReaction("octagonal_sign")
                     script {
+                        def slackResponse = slackSend(channel: "jenkins", message: "Build started for $JOB_NAME\n$JOB_URL")
+                        slackResponse.addReaction("thumbsup")
                         
                         options = readYaml (file: config.configFile) 
                     }
@@ -44,15 +45,15 @@ def call(body) {
         }
         post { 
             success { 
-                script {
-                    slackResponse.addReaction("white_check_mark")
-                }
+                // script {
+                //     slackResponse.addReaction("white_check_mark")
+                // }
                 // slackSend channel: slackResponse.threadId, message: "$JOB_NAME has passed and is available at https://${hostname}."
             }
             failure { 
-                script {
-                    slackResponse.addReaction("octagonal_sign")
-                }
+                // script {
+                //     slackResponse.addReaction("octagonal_sign")
+                // }
                 // slackSend channel: slackResponse.threadId, message: "$JOB_NAME has failed. Check $JOB_URL"
             }
         }
