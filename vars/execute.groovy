@@ -13,28 +13,28 @@ def call(body) {
             }
         }
         stages {
-            stage('config'){
+            stage('Config'){
                 steps{
                     script {
                         options = readYaml (file: config.configFile) 
                     }
                 }
             }
-            stage("Build/Push Docker Image") {
+            stage("Build") {
                 environment {
                     PATH = "/busybox:/kaniko:$PATH"
                 }
                 steps {
-                    buildImages(options.components)
+                    buildImages(options.resources)
                 }
             }
-            stage('K8s staging deploy') {
+            stage('Deploy') {
                 environment {
                     NAMESPACE = "${options.namespace}"
                     PROJECT_ID = "${options.projectId}"
                 }
                 steps {
-                    generateConfigs()
+                    generateConfigs(options.resources)
                     container(name: 'kube') {
                         // Deploy to k8s cluster
                         script {
@@ -55,22 +55,22 @@ def call(body) {
     }
 }
 
-def buildImages(components) {
-    components.each { component -> 
+def buildImages(resources) {
+    resources.each { resource -> 
         container(name: 'kaniko', shell: '/busybox/sh') {
             script{
                 sh """#!/busybox/sh 
-                    /kaniko/executor -f `pwd`/${component.build.dockerfile} -c `pwd`/${component.build.context} --insecure --skip-tls-verify --cache=false --destination=${component.build.destination}"""
+                    /kaniko/executor -f `pwd`/${resource.build.dockerfile} -c `pwd`/${resource.build.context} --insecure --skip-tls-verify --cache=false --destination=${resource.build.destination}"""
             }
         }
     }
 }
 
-def generateConfigs(components) {
+def generateConfigs(resources) {
     generateConfig([deploy: [[type: "namespace"]]])
 
 
-    components.each { component -> 
-        generateConfig(component)
+    resources.each { resource -> 
+        generateConfig(resource)
     }
 }
