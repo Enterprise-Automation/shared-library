@@ -14,7 +14,11 @@ def call(body) {
         }
         stages {
             stage('config'){
-                options = readYaml (file: config.configFile) 
+                steps{
+                    script {
+                        options = readYaml (file: config.configFile) 
+                    }
+                }
             }
             stage("Build/Push Docker Image") {
                 environment {
