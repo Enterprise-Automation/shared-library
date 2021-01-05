@@ -55,27 +55,22 @@ def call(body) {
     }
 }
 
-def buildImages(deployments) {
-    deployments.each { deployment -> 
+def buildImages(components) {
+    components.each { component -> 
         container(name: 'kaniko', shell: '/busybox/sh') {
             script{
                 sh """#!/busybox/sh 
-                    /kaniko/executor -f `pwd`/${deployment.build.dockerfile} -c `pwd`/${deployment.build.context} --insecure --skip-tls-verify --cache=false --destination=${deployment.build.destination}"""
+                    /kaniko/executor -f `pwd`/${component.build.dockerfile} -c `pwd`/${component.build.context} --insecure --skip-tls-verify --cache=false --destination=${component.build.destination}"""
             }
         }
     }
 }
 
-def generateConfigs(deployments) {
-    generateConfig('namespace', null)
+def generateConfigs(components) {
+    generateConfig([deploy: [[type: "namespace"]]])
 
 
-    //  deployments.each { deployment -> 
-    //     container(name: 'kaniko', shell: '/busybox/sh') {
-    //         script{
-    //             sh """#!/busybox/sh 
-    //                 /kaniko/executor -f `pwd`/${deployment.build.dockerfile} -c `pwd`/${deployment.build.context} --insecure --skip-tls-verify --cache=false --destination=${deployment.build.destination}"""
-    //         }
-    //     }
-    // }
+    components.each { component -> 
+        generateConfig(component)
+    }
 }
