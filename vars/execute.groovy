@@ -57,7 +57,7 @@ def buildImages(deployments) {
     deployments.each { deployment -> 
         container(name: 'kaniko', shell: '/busybox/sh') {
             script{
-                stage{
+                stage("build ${deployment.name}"){
                     sh """#!/busybox/sh \
                         /kaniko/executor -f `pwd`/${deployment.build.dockerfile} -c `pwd`/${deployment.build.context} --insecure --skip-tls-verify --cache=false --destination=${deployment.build.destination}"""
                 }
