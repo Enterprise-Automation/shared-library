@@ -17,7 +17,7 @@ def call(body) {
                 
                 steps{
                     script {
-                        slackResponse = slackSend(channel: "jenkins", message: "Build started for $JOB_NAME")
+                        slackResponse = slackSend(channel: "jenkins", message: "Awww true 'ey. Started a build for $JOB_NAME cunt")
                         // slackSend(channel: slackResponse.threadId, message: "Job URL: $JOB_URL")
                         options = readYaml (file: config.configFile) 
                     }
@@ -47,14 +47,14 @@ def call(body) {
             success { 
                 script {
                     slackResponse.addReaction("thumbsup")
-                    // slackSend(channel: slackResponse.threadId, message: "Job has passed and is available at https://${options.deploy.hostname}")
+                    slackSend(channel: slackResponse.threadId, message: "The job passed 'ey! https://${options.deploy.hostname}\nChuur cuh :beer:")
                 }
                 // slackSend channel: slackResponse.threadId, message: "$JOB_NAME has passed and is available at https://${hostname}."
             }
             failure { 
                 script {
-                    slackResponse.addReaction("thumbsdown")
-                    // slackSend(channel: slackResponse.threadId, message: "Job has failed")
+                    // slackResponse.addReaction("thumbsdown")
+                    slackSend(channel: slackResponse.threadId, message: "The job failed you stringray looking motherfucker!")
                 }
                 // slackSend channel: slackResponse.threadId, message: "$JOB_NAME has failed. Check $JOB_URL"
             }
