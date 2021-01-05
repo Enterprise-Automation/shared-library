@@ -16,11 +16,11 @@ def call(body) {
             stage('Config'){
                 
                 steps{
-                    def slackResponse = slackSend(channel: "cool-threads", message: "Here is the primary message")
-                    slackSend(channel: slackResponse.threadId, message: "Thread reply #1")
-                    slackSend(channel: slackResponse.threadId, message: "Thread reply #2")
+                   
                     script {
-
+                        def slackResponse = slackSend(channel: "cool-threads", message: "Here is the primary message")
+                        slackSend(channel: slackResponse.threadId, message: "Thread reply #1")
+                        slackSend(channel: slackResponse.threadId, message: "Thread reply #2")
                         // def slackResponse = slackSend(channel: "jenkins", message: "Build started for $JOB_NAME\n$JOB_URL")
                         // slackResponse.addReaction("thumbsup")
                         
