@@ -40,7 +40,7 @@ spec:
         app: ${resource.name}
     spec:
       containers:
-        - image: ${resource.build.destination}
+        - image: ${resource.image}
           name: ${resource.name}
           imagePullPolicy: Always
           resources: {}
