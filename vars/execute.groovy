@@ -4,7 +4,7 @@ def call(body) {
     body.delegate = config
     body()
     def options = [:]
-def slackResponse
+    def slackResponse
     pipeline {
         agent {
             kubernetes {
@@ -46,8 +46,8 @@ def slackResponse
         post { 
             success { 
                 script {
-                    slackResponse.addReaction("white_check_mark")
-                    slackSend(channel: slackResponse.threadId, message: "Job has passed and is available at https://${options.deploy.hostname}.")
+                    slackResponse.addReaction("whitecheckmark")
+                    slackSend(channel: slackResponse.threadId, message: "Job has passed and is available at https://${options.deploy.hostname}")
                 }
                 // slackSend channel: slackResponse.threadId, message: "$JOB_NAME has passed and is available at https://${hostname}."
             }
