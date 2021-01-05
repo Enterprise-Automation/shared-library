@@ -4,7 +4,7 @@ def call(body) {
     body.delegate = config
     body()
     def options = [:]
-
+def slackResponse
     pipeline {
         agent {
             kubernetes {
@@ -16,14 +16,9 @@ def call(body) {
             stage('Config'){
                 
                 steps{
-                   
                     script {
-                        def slackResponse = slackSend(channel: "jenkins", message: "Here is the primary message")
-                        slackSend(channel: slackResponse.threadId, message: "Thread reply #1")
-                        slackSend(channel: slackResponse.threadId, message: "Thread reply #2")
-                        // def slackResponse = slackSend(channel: "jenkins", message: "Build started for $JOB_NAME\n$JOB_URL")
-                        // slackResponse.addReaction("thumbsup")
-                        
+                        slackResponse = slackSend(channel: "jenkins", message: "Build started for $JOB_NAME")
+                        slackSend(channel: slackResponse.threadId, message: "Job URL: $JOB_URL")
                         options = readYaml (file: config.configFile) 
                     }
                 }
@@ -48,20 +43,22 @@ def call(body) {
                 }
             }
         }
-        // post { 
-        //     success { 
-        //         // script {
-        //         //     slackResponse.addReaction("white_check_mark")
-        //         // }
-        //         // slackSend channel: slackResponse.threadId, message: "$JOB_NAME has passed and is available at https://${hostname}."
-        //     }
-        //     failure { 
-        //         // script {
-        //         //     slackResponse.addReaction("octagonal_sign")
-        //         // }
-        //         // slackSend channel: slackResponse.threadId, message: "$JOB_NAME has failed. Check $JOB_URL"
-        //     }
-        // }
+        post { 
+            success { 
+                script {
+                    slackResponse.addReaction("white_check_mark")
+                    slackSend(channel: slackResponse.threadId, message: "Job has passed and is available at https://${options.deploy.hostname}.")
+                }
+                // slackSend channel: slackResponse.threadId, message: "$JOB_NAME has passed and is available at https://${hostname}."
+            }
+            failure { 
+                script {
+                    slackResponse.addReaction("octagonal_sign")
+                    slackSend(channel: slackResponse.threadId, message: "Job has failed")
+                }
+                // slackSend channel: slackResponse.threadId, message: "$JOB_NAME has failed. Check $JOB_URL"
+            }
+        }
     }
 }
 
