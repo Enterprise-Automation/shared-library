@@ -26,7 +26,7 @@ def call(body) {
                     PATH = "/busybox:/kaniko:$PATH"
                 }
                 steps {
-                    buildImages(options.build)
+                    buildImages(options.buildd)
                 }
             }
             stage('Deploy') {
@@ -47,10 +47,10 @@ def call(body) {
         }
         post { 
             success { 
-                slackSend channel: slackResponse.threadId, color: "good", message: "$JOB_NAME has passed and is available at https://${hostname}."
+                slackSend channel: slackResponse.threadId, message: "$JOB_NAME has passed and is available at https://${hostname}."
             }
             failure { 
-                slackSend channel: slackResponse.threadId, color: "danger", message: "$JOB_NAME has failed. Check $JOB_URL"
+                slackSend channel: slackResponse.threadId, message: "$JOB_NAME has failed. Check $JOB_URL"
             }
         }
     }
