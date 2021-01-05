@@ -1,6 +1,5 @@
 def call (resource, namespace, hostname) {
-    resource.deploy.each { deploy -> 
-        switch(deploy.kind) {
+        switch(resource.kind) {
 
             
             case 'namespace': 
@@ -10,7 +9,7 @@ kind: Namespace
 apiVersion: v1
 metadata:
   annotations:
-    field.cattle.io/projectId: ${deploy.projectId}
+    field.cattle.io/projectId: ${resource.projectId}
   name: 
   labels:
     name: ${namespace}"""
@@ -20,49 +19,49 @@ metadata:
 
             case 'deployment': 
             script{
-                writeFile file: "k8s/${deploy.kind}-${deploy.name}.yaml", text: """
+                writeFile file: "k8s/${resource.kind}-${resource.name}.yaml", text: """
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   namespace: ${namespace}
   labels:
-    app: ${deploy.name}
-  name: ${deploy.name}
+    app: ${resource.name}
+  name: ${resource.name}
 spec:
   replicas: 1
   strategy: {}
   selector:
     matchLabels:
-      app: ${deploy.name}
+      app: ${resource.name}
   template:
     metadata:
       labels:
         build_number: \$BUILD_NUMBER
-        app: ${deploy.name}
+        app: ${resource.name}
     spec:
       containers:
         - image: ${resource.build.destination}
-          name: ${deploy.name}
+          name: ${resource.name}
           imagePullPolicy: Always
           resources: {}
           stdin: true
           tty: true
       restartPolicy: Always
       imagePullSecrets:
-        - name: ${deploy.imagePullSecret}"""
+        - name: ${resource.imagePullSecret}"""
             }
             break; 
 
 
             case 'registry-secret': 
             script{
-                writeFile file: "k8s/${deploy.kind}-${deploy.name}.yaml", text: """
+                writeFile file: "k8s/${resource.kind}-${resource.name}.yaml", text: """
 apiVersion: v1
 data:
-  .dockerconfigjson: ${deploy.dockerconfigjson}
+  .dockerconfigjson: ${resource.dockerconfigjson}
 kind: Secret
 metadata:
-  name: ${deploy.name}
+  name: ${resource.name}
   namespace: ${namespace}
 type: kubernetes.io/dockerconfigjson"""
             }
@@ -71,38 +70,38 @@ type: kubernetes.io/dockerconfigjson"""
 
             case 'service': 
             script{
-                writeFile file: "k8s/${deploy.kind}-${deploy.name}.yaml", text: """
+                writeFile file: "k8s/${resource.kind}-${resource.name}.yaml", text: """
 apiVersion: v1
 kind: Service
 metadata:
   namespace: ${namespace}
-  name: ${deploy.name}
+  name: ${resource.name}
 spec:
   ports:
     - name: "http"
-      port: ${deploy.port}
-      targetPort: ${deploy.port}
+      port: ${resource.port}
+      targetPort: ${resource.port}
   selector:
-    app: ${deploy.target}"""
+    app: ${resource.target}"""
             }
             break; 
 
 
             case 'ingress': 
             script{
-                writeFile file: "k8s/${deploy.kind}-${deploy.name}.yaml", text: """
+                writeFile file: "k8s/${resource.kind}-${resource.name}.yaml", text: """
 apiVersion: v1
 kind: Service
 metadata:
   namespace: ${namespace}
-  name: ${deploy.name}
+  name: ${resource.name}
 spec:
   ports:
     - name: "http"
-      port: ${deploy.port}
-      targetPort: ${deploy.port}
+      port: ${resource.port}
+      targetPort: ${resource.port}
   selector:
-    app: ${deploy.target}
+    app: ${resource.target}
 ---
 apiVersion: extensions/v1beta1
 kind: Ingress
@@ -111,7 +110,7 @@ metadata:
     cert-manager.io/cluster-issuer: letsencrypt
     kubernetes.io/ingress.class: nginx
     kubernetes.io/ingress.provider: nginx
-  name: ${deploy.name}
+  name: ${resource.name}
   namespace: ${namespace}
 spec:
   rules:
@@ -119,12 +118,12 @@ spec:
     http:
       paths:
       - backend:
-          serviceName: ${deploy.name}
-          servicePort: ${deploy.port}
+          serviceName: ${resource.name}
+          servicePort: ${resource.port}
   tls:
   - hosts:
     - ${hostname}
-    secretName: ${deploy.name}-tls-cert"""
+    secretName: ${resource.name}-tls-cert"""
             }
             break; 
         }
