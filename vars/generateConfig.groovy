@@ -1,6 +1,8 @@
 def call (resource) {
     resource.deploy.each { deploy -> 
         switch(deploy.type) {
+
+            
             case 'namespace': 
             script{
                 writeFile file: "k8s/0namespace.yaml", text: '''
@@ -14,6 +16,8 @@ metadata:
     name: $NAMESPACE'''
             }
             break; 
+
+
             case 'deployment': 
             script{
                 writeFile file: "k8s/${deploy.name}.yaml", text: """
@@ -46,6 +50,21 @@ spec:
       restartPolicy: Always
       imagePullSecrets:
         - name: ${deploy.imagePullSecret}"""
+            }
+            break; 
+
+
+            case 'registry-secret': 
+            script{
+                writeFile file: "k8s/${deploy.name}.yaml", text: """
+apiVersion: v1
+data:
+  .dockerconfigjson: ${dockerconfigjson}
+kind: Secret
+metadata:
+  name: ${deploy.name}
+  namespace: \$NAMESPACE
+type: kubernetes.io/dockerconfigjson"""
             }
             break; 
         }
