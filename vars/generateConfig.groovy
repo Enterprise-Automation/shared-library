@@ -10,7 +10,7 @@ apiVersion: v1
 metadata:
   annotations:
     field.cattle.io/projectId: ${resource.projectId}
-  name: 
+  name: ${namespace}
   labels:
     name: ${namespace}"""
             }
