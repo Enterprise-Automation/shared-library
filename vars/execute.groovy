@@ -25,7 +25,7 @@ def call(body) {
                     PATH = "/busybox:/kaniko:$PATH"
                 }
                 steps {
-                    buildImages(options.deployments)
+                    buildImages(options.components)
                 }
             }
             stage('K8s staging deploy') {
@@ -67,15 +67,15 @@ def buildImages(deployments) {
 }
 
 def generateConfigs(deployments) {
-    script{
-        writeFile file: "k8s/0namespace.yaml", text: '''
-kind: Namespace
-apiVersion: v1
-metadata:
-  annotations:
-    field.cattle.io/projectId: $PROJECT_ID
-  name: $NAMESPACE
-  labels:
-    name: $NAMESPACE'''
-    }
+    generateConfig('namespace')
+
+
+    //  deployments.each { deployment -> 
+    //     container(name: 'kaniko', shell: '/busybox/sh') {
+    //         script{
+    //             sh """#!/busybox/sh 
+    //                 /kaniko/executor -f `pwd`/${deployment.build.dockerfile} -c `pwd`/${deployment.build.context} --insecure --skip-tls-verify --cache=false --destination=${deployment.build.destination}"""
+    //         }
+    //     }
+    // }
 }
