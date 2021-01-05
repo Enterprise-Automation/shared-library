@@ -30,25 +30,27 @@ def call(body) {
             }
             stage('K8s staging deploy') {
                 environment {
-                    APPNAME = "weather"
+                    NAMESPACE = "${options.namespace}"
+                    PROJECT_ID = "${options.projectId}"
                 }
                 steps {
+                    generateConfigs()
                     container(name: 'kube') {
                         // Deploy to k8s cluster
                         script {
-                            kubernetesDeploy configs: "manifests/*.yaml", kubeconfigId: 'kubeconfig'
+                            kubernetesDeploy configs: "k8s/*.yaml", kubeconfigId: 'kubeconfig'
                         }
                     }
                 }
             }
         }
-    }
-    post { 
-        success { 
-            slackSend color: "good", message: "$JOB_NAME has passed."
-        }
-        failure { 
-            slackSend color: "danger", message: "$JOB_NAME has failed. Check $JOB_URL"
+        post { 
+            success { 
+                slackSend color: "good", message: "$JOB_NAME has passed."
+            }
+            failure { 
+                slackSend color: "danger", message: "$JOB_NAME has failed. Check $JOB_URL"
+            }
         }
     }
 }
@@ -57,11 +59,23 @@ def buildImages(deployments) {
     deployments.each { deployment -> 
         container(name: 'kaniko', shell: '/busybox/sh') {
             script{
-                // stage("build ${deployment.name}"){
-                    sh """#!/busybox/sh 
-                        /kaniko/executor -f `pwd`/${deployment.build.dockerfile} -c `pwd`/${deployment.build.context} --insecure --skip-tls-verify --cache=false --destination=${deployment.build.destination}"""
-                // }
+                sh """#!/busybox/sh 
+                    /kaniko/executor -f `pwd`/${deployment.build.dockerfile} -c `pwd`/${deployment.build.context} --insecure --skip-tls-verify --cache=false --destination=${deployment.build.destination}"""
             }
         }
+    }
+}
+
+def generateConfigs(deployments) {
+    script{
+        writeFile file: "k8s/0namespace.yaml", '''
+kind: Namespace
+apiVersion: v1
+metadata:
+  annotations:
+    field.cattle.io/projectId: $PROJECT_ID
+  name: $NAMESPACE
+  labels:
+    name: $NAMESPACE'''
     }
 }
