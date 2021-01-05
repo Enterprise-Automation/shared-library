@@ -68,7 +68,7 @@ def buildImages(deployments) {
 
 def generateConfigs(deployments) {
     script{
-        writeFile file: "k8s/0namespace.yaml", '''
+        writeFile file: "k8s/0namespace.yaml", text: '''
 kind: Namespace
 apiVersion: v1
 metadata:
