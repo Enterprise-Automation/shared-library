@@ -16,6 +16,7 @@ def call(body) {
             stage('Config'){
                 steps{
                     script {
+                        slackSend color: "good", message: "Build started for $JOB_NAME\n$JOB_URL"
                         options = readYaml (file: config.configFile) 
                     }
                 }
