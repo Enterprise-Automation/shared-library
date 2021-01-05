@@ -57,11 +57,11 @@ def call(body) {
 }
 
 def buildImages(build) {
-    resources.each { resource -> 
+    build.each { image -> 
         container(name: 'kaniko', shell: '/busybox/sh') {
             script{
                 sh """#!/busybox/sh 
-                    /kaniko/executor -f `pwd`/${resource.build.dockerfile} -c `pwd`/${resource.build.context} --insecure --skip-tls-verify --cache=false --destination=${resource.build.destination}"""
+                    /kaniko/executor -f `pwd`/${image.dockerfile} -c `pwd`/${image.context} --insecure --skip-tls-verify --cache=false --destination=${image.destination}"""
             }
         }
     }
