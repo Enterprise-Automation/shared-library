@@ -4,7 +4,7 @@ def call(body) {
     body.delegate = config
     body()
     def options = [:]
-    
+
     pipeline {
         agent {
             kubernetes {
@@ -43,20 +43,20 @@ def call(body) {
                 }
             }
         }
-        post { 
-            success { 
-                // script {
-                //     slackResponse.addReaction("white_check_mark")
-                // }
-                // slackSend channel: slackResponse.threadId, message: "$JOB_NAME has passed and is available at https://${hostname}."
-            }
-            failure { 
-                // script {
-                //     slackResponse.addReaction("octagonal_sign")
-                // }
-                // slackSend channel: slackResponse.threadId, message: "$JOB_NAME has failed. Check $JOB_URL"
-            }
-        }
+        // post { 
+        //     success { 
+        //         // script {
+        //         //     slackResponse.addReaction("white_check_mark")
+        //         // }
+        //         // slackSend channel: slackResponse.threadId, message: "$JOB_NAME has passed and is available at https://${hostname}."
+        //     }
+        //     failure { 
+        //         // script {
+        //         //     slackResponse.addReaction("octagonal_sign")
+        //         // }
+        //         // slackSend channel: slackResponse.threadId, message: "$JOB_NAME has failed. Check $JOB_URL"
+        //     }
+        // }
     }
 }
 
