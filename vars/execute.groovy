@@ -3,8 +3,7 @@ def call(body) {
     body.resolveStrategy = Closure.DELEGATE_FIRST
     body.delegate = config
     body()
-
-    options = readYaml (file: config.configFile) 
+    def options = [:]
 
     pipeline {
         agent {
@@ -14,14 +13,15 @@ def call(body) {
             }
         }
         stages {
+            stage('config'){
+                options = readYaml (file: config.configFile) 
+            }
             stage("Build/Push Docker Image") {
                 environment {
                     PATH = "/busybox:/kaniko:$PATH"
                 }
                 steps {
-                    container(name: 'kaniko', shell: '/busybox/sh') {
-                        buildImages(options.deployments)
-                    }
+                    buildImages(options.deployments)
                 }
             }
             stage('K8s staging deploy') {
@@ -51,11 +51,12 @@ def call(body) {
 
 def buildImages(deployments) {
     deployments.each { deployment -> 
-        stage{
-
+        container(name: 'kaniko', shell: '/busybox/sh') {
             script{
-                sh """#!/busybox/sh \
-                    /kaniko/executor -f `pwd`/${deployment.build.dockerfile} -c `pwd`/${deployment.build.context} --insecure --skip-tls-verify --cache=false --destination=${deployment.build.destination}"""
+                stage{
+                    sh """#!/busybox/sh \
+                        /kaniko/executor -f `pwd`/${deployment.build.dockerfile} -c `pwd`/${deployment.build.context} --insecure --skip-tls-verify --cache=false --destination=${deployment.build.destination}"""
+                }
             }
         }
     }
