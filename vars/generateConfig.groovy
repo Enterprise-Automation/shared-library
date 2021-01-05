@@ -37,7 +37,7 @@ spec:
         app: ${deploy.name}
     spec:
       containers:
-        - image: 
+        - image: ${resource.destination}
           name: ${deploy.name}
           imagePullPolicy: Always
           resources: {}
