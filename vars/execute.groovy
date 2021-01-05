@@ -46,14 +46,14 @@ def call(body) {
         post { 
             success { 
                 script {
-                    slackResponse.addReaction("thumbsup")
+                    slackResponse.addReaction("white_check_mark")
                     slackSend(channel: slackResponse.threadId, message: "The job passed 'ey! https://${options.deploy.hostname}\nChuur cuh :beer:")
                 }
                 // slackSend channel: slackResponse.threadId, message: "$JOB_NAME has passed and is available at https://${hostname}."
             }
             failure { 
                 script {
-                    // slackResponse.addReaction("thumbsdown")
+                    slackResponse.addReaction("octagonal_sign")
                     slackSend(channel: slackResponse.threadId, message: "The job failed you stringray looking motherfucker!")
                 }
                 // slackSend channel: slackResponse.threadId, message: "$JOB_NAME has failed. Check $JOB_URL"
