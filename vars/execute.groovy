@@ -47,7 +47,7 @@ def call(body) {
         }
         post { 
             success { 
-                slackSend color: "good", message: "$JOB_NAME has passed."
+                slackSend color: "good", message: "$JOB_NAME has passed and is available at https://${hostname}."
             }
             failure { 
                 slackSend color: "danger", message: "$JOB_NAME has failed. Check $JOB_URL"
