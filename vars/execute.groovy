@@ -68,8 +68,6 @@ def buildImages(resources) {
 
 def generateConfigs(resources) {
     generateConfig([deploy: [[type: "namespace"]]])
-
-
     resources.each { resource -> 
         generateConfig(resource)
     }
