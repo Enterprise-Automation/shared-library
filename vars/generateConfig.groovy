@@ -125,6 +125,8 @@ spec:
   - hosts:
     - ${deploy.hostname}
     secretName: ${deploy.name}-tls-cert"""
+                slackSend color: "good", message: "ingress resource generated https://${deploy.hostname} (this does not mean the build has passed)"
+
             }
             break; 
         }
