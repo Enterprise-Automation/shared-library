@@ -17,6 +17,8 @@ def call(body) {
                 steps{
                     script {
                         slackResponse = slackSend(channel: "jenkins", message: "Build started for $JOB_NAME\n$JOB_URL")
+                    slackResponse.addReaction("octagonal_sign")
+                        
                         options = readYaml (file: config.configFile) 
                     }
                 }
