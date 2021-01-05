@@ -25,7 +25,7 @@ def call(body) {
                     PATH = "/busybox:/kaniko:$PATH"
                 }
                 steps {
-                    buildImages(options.resource)
+                    buildImages(options.resources)
                 }
             }
             stage('Deploy') {
