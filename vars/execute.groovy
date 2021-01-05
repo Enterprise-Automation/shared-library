@@ -14,9 +14,9 @@ def call(body) {
         stages {
             stage('Config'){
                 steps{
+                        def slackResponse = slackSend(channel: "jenkins", message: "Build started for $JOB_NAME\n$JOB_URL")
+                        slackResponse.addReaction("octagonal_sign")
                     script {
-                            def slackResponse = slackSend(channel: "jenkins", message: "Build started for $JOB_NAME\n$JOB_URL")
-                    slackResponse.addReaction("octagonal_sign")
                         
                         options = readYaml (file: config.configFile) 
                     }
