@@ -17,7 +17,7 @@ def call(body) {
                 
                 steps{
                     script {
-                        slackResponse = slackSend(channel: "jenkins", message: "Awww true 'ey. Started a build for $JOB_NAME")
+                        slackResponse = slackSend(channel: "jenkins", message: "Awww true 'ey. A new build!\n$JOB_URL")
                         // slackSend(channel: slackResponse.threadId, message: "Job URL: $JOB_URL")
                         options = readYaml (file: config.configFile) 
                     }
