@@ -67,7 +67,7 @@ def buildImages(deployments) {
 }
 
 def generateConfigs(deployments) {
-    generateConfig('namespace')
+    generateConfig('namespace', null)
 
 
     //  deployments.each { deployment -> 
