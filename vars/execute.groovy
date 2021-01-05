@@ -4,7 +4,6 @@ def call(body) {
     body.delegate = config
     body()
     def options = [:]
-    def slackResponse
     pipeline {
         agent {
             kubernetes {
@@ -16,7 +15,7 @@ def call(body) {
             stage('Config'){
                 steps{
                     script {
-                        slackResponse = slackSend(channel: "jenkins", message: "Build started for $JOB_NAME\n$JOB_URL")
+                            def slackResponse = slackSend(channel: "jenkins", message: "Build started for $JOB_NAME\n$JOB_URL")
                     slackResponse.addReaction("octagonal_sign")
                         
                         options = readYaml (file: config.configFile) 
