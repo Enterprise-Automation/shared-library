@@ -1,30 +1,30 @@
-def call (resource) {
+def call (resource, namespace, hostname) {
     resource.deploy.each { deploy -> 
         switch(deploy.type) {
 
             
             case 'namespace': 
             script{
-                writeFile file: "k8s/0namespace.yaml", text: '''
+                writeFile file: "k8s/0namespace.yaml", text: """
 kind: Namespace
 apiVersion: v1
 metadata:
   annotations:
-    field.cattle.io/projectId: $PROJECT_ID
-  name: $NAMESPACE
+    field.cattle.io/projectId: ${deploy.projectId}
+  name: 
   labels:
-    name: $NAMESPACE'''
+    name: ${namespace}"""
             }
             break; 
 
 
             case 'deployment': 
             script{
-                writeFile file: "k8s/${deploy.name}.yaml", text: """
+                writeFile file: "k8s/${deploy.kind}-${deploy.name}.yaml", text: """
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  namespace: \$NAMESPACE
+  namespace: ${namespace}
   labels:
     app: ${deploy.name}
   name: ${deploy.name}
@@ -56,14 +56,14 @@ spec:
 
             case 'registry-secret': 
             script{
-                writeFile file: "k8s/${deploy.name}.yaml", text: """
+                writeFile file: "k8s/${deploy.kind}-${deploy.name}.yaml", text: """
 apiVersion: v1
 data:
   .dockerconfigjson: ${deploy.dockerconfigjson}
 kind: Secret
 metadata:
   name: ${deploy.name}
-  namespace: \$NAMESPACE
+  namespace: ${namespace}
 type: kubernetes.io/dockerconfigjson"""
             }
             break; 
@@ -71,11 +71,11 @@ type: kubernetes.io/dockerconfigjson"""
 
             case 'service': 
             script{
-                writeFile file: "k8s/${deploy.name}.yaml", text: """
+                writeFile file: "k8s/${deploy.kind}-${deploy.name}.yaml", text: """
 apiVersion: v1
 kind: Service
 metadata:
-  namespace: \$NAMESPACE
+  namespace: ${namespace}
   name: ${deploy.name}
 spec:
   ports:
@@ -90,11 +90,11 @@ spec:
 
             case 'ingress': 
             script{
-                writeFile file: "k8s/${deploy.name}.yaml", text: """
+                writeFile file: "k8s/${deploy.kind}-${deploy.name}.yaml", text: """
 apiVersion: v1
 kind: Service
 metadata:
-  namespace: \$NAMESPACE
+  namespace: ${namespace}
   name: ${deploy.name}
 spec:
   ports:
@@ -112,10 +112,10 @@ metadata:
     kubernetes.io/ingress.class: nginx
     kubernetes.io/ingress.provider: nginx
   name: ${deploy.name}
-  namespace: \$NAMESPACE
+  namespace: ${namespace}
 spec:
   rules:
-  - host: ${deploy.hostname}
+  - host: ${hostname}
     http:
       paths:
       - backend:
@@ -123,10 +123,8 @@ spec:
           servicePort: ${deploy.port}
   tls:
   - hosts:
-    - ${deploy.hostname}
+    - ${hostname}
     secretName: ${deploy.name}-tls-cert"""
-                slackSend color: "#007aff", message: "ingress resource generated https://${deploy.hostname}"
-
             }
             break; 
         }

@@ -26,7 +26,7 @@ def call(body) {
                     PATH = "/busybox:/kaniko:$PATH"
                 }
                 steps {
-                    buildImages(options.resources)
+                    buildImages(options.build)
                 }
             }
             stage('Deploy') {
@@ -35,7 +35,7 @@ def call(body) {
                     PROJECT_ID = "${options.projectId}"
                 }
                 steps {
-                    generateConfigs(options.resources)
+                    generateConfigs(options.deploy)
                     container(name: 'kube') {
                         // Deploy to k8s cluster
                         script {
@@ -56,7 +56,7 @@ def call(body) {
     }
 }
 
-def buildImages(resources) {
+def buildImages(build) {
     resources.each { resource -> 
         container(name: 'kaniko', shell: '/busybox/sh') {
             script{
@@ -67,9 +67,9 @@ def buildImages(resources) {
     }
 }
 
-def generateConfigs(resources) {
+def generateConfigs(deploy) {
     generateConfig([deploy: [[type: "namespace"]]])
-    resources.each { resource -> 
-        generateConfig(resource)
+    deploy.resources.each { resource -> 
+        generateConfig(resource, deploy.namespace, deploy.hostname)
     }
 }
