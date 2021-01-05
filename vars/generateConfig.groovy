@@ -59,12 +59,72 @@ spec:
                 writeFile file: "k8s/${deploy.name}.yaml", text: """
 apiVersion: v1
 data:
-  .dockerconfigjson: ${dockerconfigjson}
+  .dockerconfigjson: ${deploy.dockerconfigjson}
 kind: Secret
 metadata:
   name: ${deploy.name}
   namespace: \$NAMESPACE
 type: kubernetes.io/dockerconfigjson"""
+            }
+            break; 
+
+
+            case 'service': 
+            script{
+                writeFile file: "k8s/${deploy.name}.yaml", text: """
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: \$NAMESPACE
+  name: ${deploy.name}
+spec:
+  ports:
+    - name: "http"
+      port: ${deploy.port}
+      targetPort: ${deploy.port}
+  selector:
+    app: ${deploy.target}"""
+            }
+            break; 
+
+
+            case 'ingress': 
+            script{
+                writeFile file: "k8s/${deploy.name}.yaml", text: """
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: \$NAMESPACE
+  name: ${deploy.name}
+spec:
+  ports:
+    - name: "http"
+      port: ${deploy.port}
+      targetPort: ${deploy.port}
+  selector:
+    app: ${deploy.target}
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt
+    kubernetes.io/ingress.class: nginx
+    kubernetes.io/ingress.provider: nginx
+  name: ${deploy.name}
+  namespace: \$NAMESPACE
+spec:
+  rules:
+  - host: ${deploy.hostname}
+    http:
+      paths:
+      - backend:
+          serviceName: ${deploy.name}
+          servicePort: ${deploy.port}
+  tls:
+  - hosts:
+    - ${deploy.hostname}
+    secretName: ${deploy.name}-tls-cert"""
             }
             break; 
         }
