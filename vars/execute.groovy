@@ -19,7 +19,7 @@ def call(body) {
                     script {
                         slackResponse = slackSend(channel: "jenkins", message: "Awww true 'ey. Started a build for $JOB_NAME cunt")
                         // slackSend(channel: slackResponse.threadId, message: "Job URL: $JOB_URL")
-                        options = readYaml (file: config.configFile) 
+                        options = reaYaml (file: config.configFile) 
                     }
                 }
             }
