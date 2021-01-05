@@ -1,6 +1,6 @@
 def call (resource, namespace, hostname) {
     resource.deploy.each { deploy -> 
-        switch(deploy.type) {
+        switch(deploy.kind) {
 
             
             case 'namespace': 

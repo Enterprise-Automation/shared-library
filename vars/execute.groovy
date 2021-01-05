@@ -30,10 +30,6 @@ def call(body) {
                 }
             }
             stage('Deploy') {
-                environment {
-                    NAMESPACE = "${options.namespace}"
-                    PROJECT_ID = "${options.projectId}"
-                }
                 steps {
                     generateConfigs(options.deploy)
                     container(name: 'kube') {
