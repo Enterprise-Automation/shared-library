@@ -16,7 +16,7 @@ def call(body) {
             stage('Config'){
                 steps{
                     script {
-                        slackResponse = slackSend color: "good", message: "Build started for $JOB_NAME\n$JOB_URL"
+                        slackResponse = slackSend(channel: "jenkins", message: "Build started for $JOB_NAME\n$JOB_URL")
                         options = readYaml (file: config.configFile) 
                     }
                 }
@@ -43,10 +43,13 @@ def call(body) {
         }
         post { 
             success { 
-                slackSend channel: slackResponse.threadId, message: "$JOB_NAME has passed and is available at https://${hostname}."
+                // slackSend channel: slackResponse.threadId, message: "$JOB_NAME has passed and is available at https://${hostname}."
+                slackResponse.addReaction("thumbsup")
             }
             failure { 
-                slackSend channel: slackResponse.threadId, message: "$JOB_NAME has failed. Check $JOB_URL"
+                // slackSend channel: slackResponse.threadId, message: "$JOB_NAME has failed. Check $JOB_URL"
+                slackResponse.addReaction("thumbsdown")
+
             }
         }
     }
