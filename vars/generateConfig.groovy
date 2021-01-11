@@ -173,7 +173,7 @@ spec:
       port: ${resource.port}
       targetPort: ${resource.port}
   selector:
-    app: ${resource.target}
+    app: ${resource.name}
 ${generateIngressYaml(resource, namespace)}
 ${generatePVCYaml(resource, namespace)}
 """
