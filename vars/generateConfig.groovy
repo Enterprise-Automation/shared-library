@@ -46,6 +46,7 @@ spec:
           resources: {}
           stdin: true
           tty: true
+${generateEnvYaml(resource.env)}
       restartPolicy: Always
       imagePullSecrets:
         - name: ${resource.imagePullSecret}"""
@@ -128,4 +129,16 @@ spec:
             break; 
         }
     
+}
+
+
+def generateEnvYaml (env) {
+  def returnString = """
+          env:"""
+  env.each{ e =>
+      returnString += """
+          - name: ${e.name}
+            value: ${e.value}
+"""
+  })
 }
