@@ -174,8 +174,8 @@ spec:
       targetPort: ${resource.port}
   selector:
     app: ${resource.target}
-${generateIngressYaml(resource)}
-${generatePVCYaml(resource)}
+${generateIngressYaml(resource, namespace)}
+${generatePVCYaml(resource, namespace)}
 """
       }
       break; 
@@ -197,7 +197,7 @@ def generateEnvYaml (env) {
 }
 
 
-def generateIngressYaml (resource) {
+def generateIngressYaml (resource, namespace) {
   def returnString = """
 ---
 apiVersion: extensions/v1beta1
@@ -208,7 +208,7 @@ metadata:
     kubernetes.io/ingress.class: nginx
     kubernetes.io/ingress.provider: nginx
   name: ${resource.name}
-  namespace: ${resource.namespace}
+  namespace: ${namespace}
 spec:
   rules:
   - host: ${hostname}
@@ -226,13 +226,14 @@ spec:
 }
 
 
-def generatePVCYaml (resource) {
+def generatePVCYaml (resource, namespace) {
   def returnString = """
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: ${resource.name}
+  namespace: ${resource.namespace}
 spec:
   accessModes:
   - ReadWriteOnce
