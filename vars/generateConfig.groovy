@@ -211,7 +211,7 @@ metadata:
   namespace: ${namespace}
 spec:
   rules:
-  - host: ${hostname}
+  - host: ${resource.hostname}
     http:
       paths:
       - backend:
@@ -219,7 +219,7 @@ spec:
           servicePort: ${resource.port}
   tls:
   - hosts:
-    - ${hostname}
+    - ${resource.hostname}
     secretName: ${resource.name}-tls-cert
 """
   return resource.hostname ? returnString : ""
@@ -233,7 +233,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: ${resource.name}
-  namespace: ${resource.namespace}
+  namespace: ${namespace}
 spec:
   accessModes:
   - ReadWriteOnce
