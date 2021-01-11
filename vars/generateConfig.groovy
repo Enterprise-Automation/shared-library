@@ -222,7 +222,6 @@ spec:
     - ${hostname}
     secretName: ${resource.name}-tls-cert
 """
-  }
   return resource.hostname ? returnString : ""
 }
 
@@ -243,7 +242,7 @@ spec:
   storageClassName: vsphere-thin
   volumeMode: Filesystem
 """
-  }
+
   return resource.persist ? returnString : ""
 }
 
@@ -255,7 +254,7 @@ def generateVolumeYaml (resource) {
         persistentVolumeClaim:
           claimName: ${resource.name}
 """
-  }
+
   return resource.persist ? returnString : ""
 }
 
@@ -265,7 +264,7 @@ def generateVolumeMountYaml (resource) {
           - mountPath: \"${resource.persist}\"
             name: data
 """
-  }
+
   return resource.persist ? returnString : ""
 }
 
