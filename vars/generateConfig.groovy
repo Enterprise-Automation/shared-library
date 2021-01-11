@@ -140,5 +140,5 @@ def generateEnvYaml (env) {
           - name: ${e.name}
             value: ${e.value}
 """
-  })
+  }
 }
