@@ -141,4 +141,5 @@ def generateEnvYaml (env) {
             value: ${e.value}
 """
   }
+  return env ? returnString : ""
 }
