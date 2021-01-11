@@ -135,7 +135,7 @@ spec:
 def generateEnvYaml (env) {
   def returnString = """
           env:"""
-  env.each{ e =>
+  env.each { e ->
       returnString += """
           - name: ${e.name}
             value: ${e.value}
